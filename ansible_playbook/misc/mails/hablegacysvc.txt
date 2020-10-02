@@ -1,0 +1,14 @@
+Eh,
+
+Är det någon som har någon ANING om vad "HABLegacySvc"
+är för något? Jag såg i access-loggarna att processen
+försöker logga in till den gamla admin-panelen (som vi
+städade bort) ungefär var femte sekund. 
+
+Apache smäller med status 500. Antagligen på grund av 
+WAF:en vi lade in i samband med byte av admin-panel ...
+
+Har lagt upp access-loggen och en tcpdump-capture på FTPn
+i vanlig ordning så ni kan kolla.
+
+/Steve

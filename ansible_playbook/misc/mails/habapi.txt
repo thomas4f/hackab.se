@@ -1,0 +1,11 @@
+Hej, jag kollade snabbt på beta-versionen av APIet.
+
+Jag har några kommentarer:
+
+1) auth med admin/password. INTE OK! Inte ens i dev.
+2) Ni tillåter JWT i query-param. INTE OK!
+3) Säkert fler grejer?
+
+Lade upp access-loggen på FTPn, kolla där ...
+
+/Steve

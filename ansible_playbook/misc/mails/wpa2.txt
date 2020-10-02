@@ -1,0 +1,12 @@
+Hej igen,
+
+så bra att du stängt av WPS-funktionen för vårat
+trådlösa nätverk (det skall tydligen finnas nån typ
+av såbarhet i den tekniken).
+
+Men vi borde nog kanske byta från WPA2 Personal till
+Enterprise, eller åtminstone byta lösenordet då och då.
+
+Kolla wpa2.tar på FTPn så fattar du vad jag menar. :)
+
+/Steve

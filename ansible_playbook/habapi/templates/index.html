@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Hack AB</title>
+	<link rel="stylesheet" href="//www.hackab.se/css/style.css">
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<!-- NAVBAR -->
+	<div class="siimple-navbar siimple-navbar--extra-large siimple-navbar--dark">
+		<a class="siimple-navbar-title" href="/">Hack AB</a>
+	</div>
+	<!-- CONTENT -->
+	<div class="siimple-content siimple-content--extra-large">
+		<h1 class="siimple-h1">API (Beta)</h1>
+		<p class="siimple-p">
+		Vi tillhandahåller ett REST-baserat API som du kan använda för att hämta öppna data från oss.</p>
+		<div class="siimple-grid-row">
+			<div class="siimple-grid-col siimple-grid-col--8 siimple-grid-col--sm-12">
+				<h2 class="siimple-h2">Anrop</h2>
+				<p class="siimple-p">Nedan följer instruktioner om hur du interagerar med vårt API.</p>
+				<h3 class="siimple-h3" id="services">services</h3>
+				<table class="siimple-table siimple-table siimple--pr-3">
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Beskrivning</td>
+						<td class="siimple-table-cell">Returnerar en lista på Hack ABs tjänster</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Metod</td>
+						<td class="siimple-table-cell">GET</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Autentisering</td>
+						<td class="siimple-table-cell">Ingen</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Exempel</td>
+						<td class="siimple-table-cell">
+							<pre class="siimple-pre">GET http://api.hackab.se:8008/services</pre>
+							<pre class="siimple-pre">
+{
+  "items": [
+    "bast", 
+    "battre", 
+    "bra"
+  ], 
+  "_meta": {
+    "msg": null, 
+    "total": 3, 
+    "auth": null
+  }
+}</pre>
+						</td>
+					</tr>
+				</table>
+
+				<h3 class="siimple-h3">services/{tjänst}</h3>
+				<table class="siimple-table siimple-table siimple--pr-3">
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Beskrivning</td>
+						<td class="siimple-table-cell">Returnerar information om en specifik tjänst</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Metod</td>
+						<td class="siimple-table-cell">GET</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Autentisering</td>
+						<td class="siimple-table-cell">Ingen</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Exempel</td>
+						<td class="siimple-table-cell">
+							<pre class="siimple-pre">GET http://api.hackab.se:8008/services/bast</pre>
+							<pre class="siimple-pre">
+{
+  "items": {
+    "available": true, 
+    "link": "http://www.hackab.se/files?id=1", 
+    "description": "Aenean dapibus cursus ligula, in sollicitudin ex luctus vel. [...]
+    "title": "Bäst"
+  }, 
+  "_meta": {
+    "msg": null, 
+    "total": 4, 
+    "auth": null
+  }
+}</pre>
+						</td>
+					</tr>
+				</table>
+
+				<h3 class="siimple-h3" id="employees">employees</h3>
+				<table class="siimple-table siimple-table siimple--pr-3">
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Beskrivning</td>
+						<td class="siimple-table-cell">Returnerar en lista på Hack ABs medarbetare</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Metod</td>
+						<td class="siimple-table-cell">GET</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Autentisering</td>
+						<td class="siimple-table-cell">Gäst</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Exempel</td>
+						<td class="siimple-table-cell">
+							<pre class="siimple-pre">GET http://api.hackab.se:8008/employees<br />Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.[...]</pre>
+							<pre class="siimple-pre">
+{
+  "items": [
+    "employee1",
+    "employee2"
+  ],
+  "_meta": {
+    "msg": null,
+    "total": 2,
+    "auth": "guest"
+  }
+}</pre>
+						</td>
+					</tr>
+				</table>
+
+				<h3 class="siimple-h3">employees/{namn}</h3>
+				<table class="siimple-table siimple-table siimple--pr-3">
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Beskrivning</td>
+						<td class="siimple-table-cell">Returnerar information om en specifik medarbetare</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Metod</td>
+						<td class="siimple-table-cell">GET</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Autentisering</td>
+						<td class="siimple-table-cell">Gäst</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Exempel</td>
+						<td class="siimple-table-cell">
+							<pre class="siimple-pre">GET http://api.hackab.se:8008/employees/kathleen<br />Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.[...]</pre>
+							<pre class="siimple-pre">
+{
+  "items": {
+    "username": "kathleen@hackab.se", 
+    "fullname": "Kathleen Eriksson", 
+    "uid": "788aaa9041b7a573943488941b0a4a3e", 
+    "title": "VD"
+  }, 
+  "_meta": {
+    "msg": null,
+    "total": 4, 
+    "auth": "guest"
+  }
+}</pre>
+						</td>
+					</tr>
+				</table>
+
+				<h3 class="siimple-h3" id="login">login</h3>
+				<table class="siimple-table siimple-table siimple--pr-3">
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Beskrivning</td>
+						<td class="siimple-table-cell">Returnerar en JSON Web Token för autentisering</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Metod</td>
+						<td class="siimple-table-cell">POST</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Autentisering</td>
+						<td class="siimple-table-cell">Ingen</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Exempel</td>
+						<td class="siimple-table-cell">
+							<pre class="siimple-pre">POST http://api.hackab.se:8008/login<br />{"username": "guest","password": "guest"}</pre>
+							<pre class="siimple-pre">
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.[...]"
+}</pre>
+						</td>
+					</tr>
+				</table>
+
+				<h3 class="siimple-h3" id="endpoints">endpoints</h3>
+				<table class="siimple-table siimple-table siimple--pr-3">
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Beskrivning</td>
+						<td class="siimple-table-cell">Returnerar en lista på implementerade API-anrop</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Metod</td>
+						<td class="siimple-table-cell">GET</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Autentisering</td>
+						<td class="siimple-table-cell">Ingen</td>
+					</tr>
+					<tr class="siimple-table-row">
+						<td class="siimple-table-cell siimple--text-bold">Exempel</td>
+						<td class="siimple-table-cell">
+							<pre class="siimple-pre">GET http://api.hackab.se:8008/endpoints</pre>
+							<pre class="siimple-pre">
+{
+  "items": {
+    "services": {
+      "method": "GET", 
+      "auth": false, 
+      "subresource": "service_id"
+    }, 
+    "login": {
+      "method": "POST", 
+      "auth": false, 
+      "subresource": false
+    }, 
+    "employees": {
+      "method": "GET", 
+      "auth": "guest", 
+      "subresource": "employee_id"
+    }, 
+    "endpoints": {
+      "method": "GET", 
+      "auth": false, 
+      "subresource": false
+    }
+  }, 
+  "_meta": {
+    "msg": null, 
+    "total": 4, 
+    "auth": null
+  }
+}</pre>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="siimple-grid-col siimple-grid-col--4 siimple-grid-col--sm-12">
+				<h2 class="siimple-h2">Navigering</h2>
+				<ul>
+					<li><a class="siimple-link" href="#services">services</a></li>
+					<li><a class="siimple-link" href="#employees">employees</a></li>
+					<li><a class="siimple-link" href="#login">login</a></li>
+					<li><a class="siimple-link" href="#endpoints">endpoints</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- FOOTER -->
+	<div class="siimple-footer siimple-footer--large siimple-footer--light">
+		<div class="siimple-grid-row">
+			<div class="siimple-grid-col siimple-grid-col--6 siimple-grid-col--sm-12">
+				<div class="siimple-footer-title">Hack AB</div>
+				<div class="siimple-footer-subtitle">
+					Svångremsgatan 1<br />
+					423 01 Långköping<br />
+					Org nr 556999-9999
+				</div>
+			</div>
+		</div>
+		<div class="siimple-footer-rule"></div>
+		<div class="siimple-grid-row">
+			<div class="siimple-grid-col siimple-grid-col--6 siimple-grid-col--sm-12">
+				© 2019 <span class="siimple--text-bold">Hack AB</span>
+			</div>
+		</div>
+	</div>
+</body>

@@ -1,0 +1,58 @@
+{
+  "kathleen": {
+    "username": "kathleen@hackab.se",
+    "fullname": "Kathleen Eriksson",
+    "title": "VD",
+    "password": "A3#Rx)",
+    "uid": "6ab286093f1a9dda7069f63938013350"
+  },
+  "jorgen": {
+    "username": "jorgen@hackab.se",
+    "fullname": "Jörgen Falk",
+    "title": "Marknadschef",
+    "password": "mamma",
+    "uid": "2a7908ee61bb5fd9289c45f177806645"
+  },
+  "simone": {
+    "username": "simone@hackab.se",
+    "fullname": "Simone Haglund",
+    "title": "Projektledare",
+    "password": "sommar",
+    "uid": "3ad81b2081f2d769d45c87e6928dc855"
+  },
+  "tobias": {
+    "username": "tobias@hackab.se",
+    "fullname": "Tobias Karlsson",
+    "title": "Projektledare",
+    "password": "hejhej",
+    "uid": "e517979c9c85ea9814eb9ce5233d4b5a"
+  },
+  "miriam": {
+    "username": "miriam@hackab.se",
+    "fullname": "Miriam Nilsson",
+    "title": "Fullstackutvecklare",
+    "password": "qwerty",
+    "uid": "60235fefdc49bdd89982178df6503980"
+  },
+  "steve": {
+    "username": "steve@hackab.se",
+    "fullname": "Steve Haag",
+    "title": "Webbutvecklare",
+    "password": "LWe7PANA",
+    "uid": "2c4cd7641cc0aa83b82ff57586aec642"
+  },
+  "jesper": {
+    "username": "jesper@hackab.se",
+    "fullname": "Jesper Bäckström",
+    "title": "Arkitekt",
+    "password": "iloveyou",
+    "uid": "6d3b8eb7072809fdaa20afd81732bc12"
+  },
+  "thomas": {
+    "username": "thomas@hackab.se",
+    "fullname": "Thomas Svensson",
+    "title": "Utvecklare",
+    "password": "Sommar19",
+    "uid": "99fbdb6e046f878c117345338a707520"
+  }
+}

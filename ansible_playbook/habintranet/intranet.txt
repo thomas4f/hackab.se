@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Connection: close
+
+Well, to be honest there is no intranet. :P
+
+Have a flag {% FLAG %}

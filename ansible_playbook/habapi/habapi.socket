@@ -1,0 +1,11 @@
+[Unit]
+Description = habapi socket
+
+[Socket]
+SocketUser = www-data
+SocketGroup = www-data
+SocketMode = 0660
+ListenStream = /var/run/habapi.socket
+
+[Install]
+WantedBy = sockets.target

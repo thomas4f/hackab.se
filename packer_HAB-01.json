@@ -1,0 +1,49 @@
+{
+	"variables": {
+		"template_name": "HAB-01-amd64",
+		"template_version": "2019-05-26",
+		"template_description": "Hack AB CTF 01"
+	},
+	"builders": [{
+		"type": "virtualbox-ovf",
+		"source_path": "packer_input/{{user `template_name`}}-basebox.ova",
+
+		"vm_name": "{{user `template_name`}}",
+		"guest_additions_mode": "disable",
+
+		"ssh_username": "root",
+		"ssh_password": "root",
+		"ssh_timeout": "10m",
+
+		"headless": false,
+		"keep_registered": false,
+
+		"format": "ova",
+		"export_opts": [
+			"--vsys", "0",
+			"--description", "{{user `template_description`}}",
+			"--version", "{{user `template_version`}}"
+		],
+		"vboxmanage": [["modifyvm", "{{.Name}}", "--macaddress1", "080000C0FFEE"]],
+		"vboxmanage_post": [["modifyvm", "{{.Name}}", "--vrde", "off"]],
+
+		"boot_wait": "0s",
+		"output_directory": "packer_output",
+		"shutdown_command": "shutdown -P now",
+		"post_shutdown_delay": "30s"
+	}],
+
+	"provisioners": [{
+		"type": "ansible-local",
+		"playbook_dir": "ansible_playbook",
+		"playbook_file": "ansible_playbook/main.yml"
+	}],
+
+	"post-processors":[{
+		"type":"vagrant",
+		"vagrantfile_template": "Vagrantfile.template",
+		"keep_input_artifact": true,
+		"output": "packer_output/{{user `template_name`}}.box"
+	}]
+}
+

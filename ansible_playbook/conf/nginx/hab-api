@@ -1,0 +1,16 @@
+server {
+	listen 8008;
+
+	server_name api.hackab.se;
+
+	location / {
+		include fastcgi_params;
+		gzip off;
+		fastcgi_param SCRIPT_NAME "";
+		fastcgi_pass unix:/var/run/habapi.socket;
+		#fastcgi_pass 127.0.0.1:9000;
+	}
+
+	access_log off;
+	error_log off;
+}

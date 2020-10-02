@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteBase /habxms/
+RewriteRule ^$ index.php?page=hem
+RewriteRule (hem|privat|forbidden|not-found)/?$ index.php?page=$1 [QSA]
+
+ErrorDocument 403 /habxms/forbidden
+ErrorDocument 404 /habxms/not-found

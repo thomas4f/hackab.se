@@ -1,0 +1,10 @@
+0-cleartext
+1-rot13
+2-rev
+3-base64
+4-hex
+5-binary
+6-zip
+7-stega
+8-exif
+9-thisisbait

@@ -1,0 +1,34 @@
+# Ansible Playbook for HAB-01 (AWS)
+
+- name: HAB-01 AWS
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    ipv4_addr: "0.0.0.0"
+
+  # HANDLERS
+  handlers:
+    - name: restart vsftpd
+      service:
+        name: vsftpd
+        state: stopped
+        enabled: yes
+
+  tasks:
+  # VSFTPD PASSIVE
+  - name: vsftpd pasv
+    blockinfile:
+      path: /etc/vsftpd.conf
+      block: |
+        # Required for cloud instances
+        pasv_enable=YES
+        pasv_min_port=65000
+        pasv_max_port=65256
+        pasv_address={{ ipv4_addr }}
+
+  # HOSTS TEMPLATE		
+  - name: hosts template
+    lineinfile:
+      line: '127.0.0.1 hab01 hackab hackab.se www.hackab.se bugbounty.hackab.se api.hackab.se'
+      path: /etc/cloud/templates/hosts.debian.tmpl

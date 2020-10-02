@@ -1,0 +1,7 @@
+Reminder:
+
+Har flyttat backupen från den publika delen
+av webbplatsen men måste verkligen fixa en 
+riktig backup-lösning (rsync? bacula?) ...
+
+Cron/tar/userdir är inte heller optimalt!

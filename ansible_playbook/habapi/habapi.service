@@ -1,0 +1,11 @@
+[Unit]
+Description = habapi backend
+ 
+[Service]
+User = www-data
+Group = www-data
+ExecStart = /srv/fastcgi/habapi/habapi.fcgi
+StandardOutput = null
+StandardInput = socket
+StandardError = null
+Restart = always

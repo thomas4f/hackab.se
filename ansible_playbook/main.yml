@@ -1,0 +1,770 @@
+# Ansible Playbook for HAB-01
+
+- name: HAB-01
+  hosts: localhost
+  gather_facts: no
+  
+  vars:
+    admin_password: 'ADMIN_PASSWORD'
+    admin_key: 'ADMIN_KEY'
+    users: "{{ lookup('file', 'misc/json/users.json') | from_json }}"
+    flags: "{{ lookup('file', 'misc/json/flags.json') | from_json }}"
+
+  # HANDLERS
+  handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: stopped
+        enabled: yes
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: stopped
+        enabled: yes
+
+    - name: update grub
+      command: update-grub
+
+    - name: update aliases
+      shell: newaliases
+
+    - name: restart postfix
+      service:
+        name: postfix
+        state: stopped
+        enabled: yes
+
+    - name: restart vsftpd
+      service:
+        name: vsftpd
+        state: stopped
+        enabled: yes
+
+    - name: restart habapi
+      service:
+        name: habapi.socket
+        state: stopped
+        enabled: yes
+
+    - name: restart squid
+      service:
+        name: squid
+        state: stopped
+        enabled: yes
+
+    - name: restart dnsmasq
+      service:
+        name: dnsmasq
+        state: stopped
+        enabled: yes
+
+    - name: restart habintranet
+      service:
+        name: habintranet
+        state: stopped
+        enabled: yes
+
+    - name: restart hablegacysvc
+      service:
+        name: hablegacysvc
+        state: started
+        enabled: yes
+
+  tasks:
+    # HOSTNAME
+  - name: hostname
+    hostname:
+      name: hab01
+
+  - name: hosts file
+    lineinfile:
+      line: '127.0.0.1 hab01 hackab hackab.se www.hackab.se bugbounty.hackab.se api.hackab.se'
+      path: "/etc/hosts"
+
+  - name: Disable IPv6 with sysctl
+    sysctl: name={{ item }} value=1 state=present
+    with_items:
+      - net.ipv6.conf.all.disable_ipv6
+      - net.ipv6.conf.default.disable_ipv6
+      - net.ipv6.conf.lo.disable_ipv6
+
+  # APT
+  - name: apt packages
+    apt:
+      name: [
+        'apache2',
+        'libapache2-mod-php7.0',
+        'php7.0-sqlite3',
+        'php-geoip',
+        'postfix',
+        's-nail',
+        'net-tools',
+        'zip',
+        'nginx',
+        'nginx-light',
+        'fcgiwrap',
+        'vsftpd',
+        'libpam-pwdfile',
+        'python-openssl',
+        'python-pip',
+        'squid',
+        'netcat',
+        'curl',
+        'nmap',
+        'sqlite3',
+        'dnsmasq',
+        'sudo'
+      ]
+      install_recommends: no
+
+  - name: apt clean
+    command: apt-get clean
+    args:
+      warn: no
+    become: yes
+    become_method: su
+
+  - name: ssl dirs
+    file:
+      path: "{{ item.path }}"
+      state: directory
+      owner: 'root'
+      group: 'root'
+    with_items:
+      - { path: '/etc/opt/ssl/private/' }
+      - { path: '/etc/opt/ssl/csr/' }
+      - { path: '/etc/opt/ssl/crt/' }
+
+  - name: key
+    openssl_privatekey:
+      path: /etc/opt/ssl/private/hackab.se.pem
+
+  - name: ssl csr
+    openssl_csr:
+      path: /etc/opt/ssl/csr/hackab.se.csr
+      privatekey_path: /etc/opt/ssl/private/hackab.se.pem
+      organization_name: 'Hack AB'
+      country_name: 'SE'
+      common_name: 'hackab.se'
+      subject_alt_name: 'DNS:www.hackab.se,DNS:bugbounty.hackab.se,DNS:api.hackab.se,DNS:internal-staging.hackab.se'
+      force: True
+
+  - name: ssl cert
+    openssl_certificate:
+      path: /etc/opt/ssl/crt/hackab.se.crt
+      privatekey_path: /etc/opt/ssl/private/hackab.se.pem
+      csr_path: /etc/opt/ssl/csr/hackab.se.csr
+      provider: selfsigned
+      force: True
+
+  - name: ssl perms
+    file:
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+      mode: 'u=rw,g=rX,o=rX'
+    with_items:
+      - { dest: '/etc/opt/ssl/private/hackab.se.pem' }
+      - { dest: '/etc/opt/ssl/csr/hackab.se.csr' }
+      - { dest: '/etc/opt/ssl/crt/hackab.se.crt' }
+
+   # APACHE
+  - name: apache modules
+    apache2_module:
+      name: "{{item}}"
+      state: present
+    with_items:
+      - php7.0
+      - userdir
+      - rewrite
+      - headers
+      - ssl
+    notify: restart apache
+
+  # APACHE CONF
+  - name: apache conf
+    replace:
+      dest: "{{ item.dest }}"
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    with_items:
+      - { dest: '/etc/apache2/apache2.conf', regexp: '^ErrorLog\ .*$', replace: 'ErrorLog /dev/null' }
+      - { dest: '/etc/apache2/conf-enabled/other-vhosts-access-log.conf', regexp: '^CustomLog\ (.*)$', replace: '#CustomLog \1' }
+      - { dest: '/etc/apache2/ports.conf', regexp: '^(Listen)\ 80$', replace: '\1 0.0.0.0:80' }
+      - { dest: '/etc/apache2/ports.conf', regexp: '^(\tListen)\ 443$', replace: '\1 0.0.0.0:443' }
+    notify: restart apache
+
+  # APACHE SELF-SIGNED
+  # See ./misc/ssl/self-signed
+  - name: self-signed certs
+    copy:
+      src: 'misc/ssl/'
+      dest: '/var/www/www.hackab.se/ssl'
+      owner: 'root'
+      group: 'root'
+      mode: 'u=rwX,g=rX,o=rX'
+
+#  # Apache CERTBOT
+#  # See ./misc/ssl/letsencrypt/ (and remember to edit /etc/apache2/hab-ssl.conf)
+#  - name: certbot certs
+#    copy:
+#      src: 'misc/certs-live/www.hackab.se'
+#      dest: '/etc/letsencrypt/live'
+#      owner: 'root'
+#      group: 'root'
+#    notify: restart apache
+
+  # VHOSTS
+  - name: apache vhost
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    with_items:
+      - { src: 'conf/apache2/000-default.conf', dest: '/etc/apache2/sites-available/000-default.conf' }
+      - { src: 'conf/apache2/001-www.hackab.se.conf', dest: '/etc/apache2/sites-available/001-www.hackab.se.conf' }
+      - { src: 'conf/apache2/002-bugbounty.hackab.se.conf', dest: '/etc/apache2/sites-available/002-bugbounty.hackab.se.conf' }
+      - { src: 'conf/apache2/003-internal-staging.hackab.se.conf', dest: '/etc/apache2/sites-available/003-internal-staging.hackab.se.conf' }
+      - { src: 'conf/apache2/hab-default.conf', dest: '/etc/apache2/hab-default.conf' }
+      - { src: 'conf/apache2/hab-www.conf', dest: '/etc/apache2/hab-www.conf' }
+      - { src: 'conf/apache2/hab-ssl.conf', dest: '/etc/apache2/hab-ssl.conf' }
+      - { src: 'conf/apache2/hab-bugbounty.conf', dest: '/etc/apache2/hab-bugbounty.conf' }
+  
+  - name: apache vhost symlinks
+    file:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      state: link
+      owner: 'root'
+      group: 'root'
+    with_items:
+      - { src: '/etc/apache2/sites-available/000-default.conf', dest: '/etc/apache2/sites-enabled/000-default.conf' }
+      - { src: '/etc/apache2/sites-available/001-www.hackab.se.conf', dest: '/etc/apache2/sites-enabled/001-www.hackab.se.conf' }
+      - { src: '/etc/apache2/sites-available/002-bugbounty.hackab.se.conf', dest: '/etc/apache2/sites-enabled/002-bugbounty.hackab.se.conf' }
+      - { src: '/etc/apache2/sites-available/003-internal-staging.hackab.se.conf', dest: '/etc/apache2/sites-enabled/003-internal-staging.hackab.se.conf' }
+    notify: restart apache
+
+  # GEOIP
+  - name: geoip dir
+    file:
+      path: '/usr/share/GeoIP/'
+      state: directory
+      owner: 'root'
+      group: 'root'
+
+  - name: geoip file
+    copy:
+      src: 'misc/GeoLiteCity.dat'
+      dest: '/usr/share/GeoIP/GeoIPCity.dat'
+      owner: 'root'
+      group: 'root'
+        
+  # DOCROOTS
+  # See ./html
+  - name: apache docroots
+    copy:
+      src: "{{ item.src }}" 
+      dest: "{{ item.dest }}"  
+      owner: 'root'
+      group: 'root'
+      mode: 'u=rwX,g=rX,o=rX'
+    with_items:
+      - { src: 'html/hab-www/', dest: '/var/www/www.hackab.se/html' }
+      - { src: 'html/hab-bugbounty/', dest: '/var/www/bugbounty.hackab.se/html' }
+      - { src: 'html/hab-default/', dest: '/var/www/html' }
+      - { src: 'html/hab-internal-staging/', dest: '/var/www/internal-staging.hackab.se/html' }
+
+  - name: apache phps link
+    file:
+      src: '/var/www/www.hackab.se/html/index.php'
+      dest: '/var/www/www.hackab.se/html/index.phps'
+      state: link
+      owner: 'root'
+      group: 'root'
+
+  # NGINX
+  - name: nginx conf
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+    with_items:
+      - { src: 'conf/nginx/hab-default', dest: '/etc/nginx/sites-enabled/default' }
+      - { src: 'conf/nginx/hab-api', dest: '/etc/nginx/sites-enabled/api.hackab.se' }
+    notify: restart nginx
+
+    # (F)CGI
+    # See ./habstatus and ./habapi
+  - name: cgi-bin dirs
+    file:
+      path: "{{ item.path }}"
+      state: directory
+      owner: 'root'
+      group: 'root'
+    with_items:
+      - { path: '/var/www/html/cgi-bin/' }
+      - { path: '/srv/fastcgi/' }
+      - { path: '/usr/local/bin/nginx/' }
+      - { path: '/srv/fastcgi/habapi/templates/' }
+
+  - name: cgi-bin files
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+      mode: '+x'
+    with_items:
+      - { src: 'habstatus/status.pl', dest: '/var/www/html/cgi-bin/status.cgi' }
+      - { src: 'habstatus/sf.sh', dest: '/usr/local/bin/nginx/sf' }
+      - { src: 'habstatus/ls.sh', dest: '/usr/local/bin/nginx/ls' }
+      - { src: 'habstatus/ps.sh', dest: '/usr/local/bin/nginx/ps' }
+      - { src: 'habstatus/who.sh', dest: '/usr/local/bin/nginx/who' }
+      - { src: 'habstatus/lastlog.sh', dest: '/usr/local/bin/nginx/lastlog' }
+      - { src: 'habstatus/netstat.sh', dest: '/usr/local/bin/nginx/netstat' }
+      - { src: 'habapi/habapi.py', dest: '/srv/fastcgi/habapi/habapi.py' }
+      - { src: 'habapi/habapi.fcgi', dest: '/srv/fastcgi/habapi/habapi.fcgi' }
+      - { src: 'habapi/templates/index.html', dest: '/srv/fastcgi/habapi/templates/index.html' }
+
+  - name: cgi-bin pip
+    pip:
+      name: "{{ item.name }}"
+    with_items:
+      - { name: 'flask' }
+      - { name: 'flask-restful' }
+      - { name: 'wheel' }
+      - { name: 'flask_jwt_extended' }
+      - { name: 'flup==1.0.3.dev-20110405' }
+
+  - name: cgi-bin services
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+    with_items:
+      - { src: 'habapi/habapi.service', dest: '/etc/systemd/system/habapi.service' }
+      - { src: 'habapi/habapi.socket', dest: '/etc/systemd/system/habapi.socket' }
+    notify: restart habapi
+
+  # STEVE
+  - name: steve user
+    user:
+      name: steve
+      comment: Steve Haag
+      shell: /bin/bash
+      
+  - name: steve files
+    copy:
+      src: 'steve/public_html'
+      dest: '/home/steve'
+      owner: 'steve'
+      group: 'steve'
+      mode: 'u=rwX,g=rX,o=rX'
+
+  - name: steve .wgetpostfile
+    lineinfile:
+      create: yes
+      line: "username={{ users.steve.username }}&password={{ users.steve.password }}&session=420"
+      path: '/home/steve/.wgetpostfile'
+
+  - name: steve .htpasswd
+    replace:
+      dest: '/home/steve/public_html/private/.htaccess'
+      regexp: '^(Require user)\ .*$'
+      replace: '\1 {{ users.steve.username }}'
+
+  - name: steve cron
+    cron:
+      user: steve
+      job: "{{ item.job }}"
+      name: "{{ item.name }}"
+    with_items:
+      - { job: '/bin/tar -C /var/www/ -zcf /home/steve/public_html/backup/hackab-backup.tar.gz www.hackab.se/ >/dev/null 2>&1 ; sleep 15', name: 'backup' }
+      - { job: '/usr/bin/wget -q -O /dev/null "http://www.hackab.se/administration" --post-file=/home/steve/.wgetpostfile >/dev/null 2>&1', name: 'session' }
+     
+  - name: steve lastlog
+    command: "{{ item.command }}"
+    args:
+      warn: no
+    with_items:
+    - { command: 'lastlog -S -u steve' }
+    - { command: 'sed -i "s/lastlog/pts\/5\x00\x00/g;s/localhost/192.168.1.31/g" /var/log/lastlog' }
+
+  - name: steve create zip flag
+    lineinfile:
+      create: yes
+      line: "{{ flags.YOUVEGOTMAIL.flag }}"
+      path: '/home/steve/flag.txt'
+
+  - name: steve encrypt flag
+    shell: "zip -P password -j -m /home/steve/fil.zip /home/steve/flag.txt"
+    become: yes
+    become_method: su
+    become_user: steve
+
+  # JSON FILES
+  # See ./misc/json
+  - name: json files
+    copy:
+      src: "{{ item.src }}" 
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+    with_items:
+      - { src: 'misc/json/flags.json', dest: '/etc/opt/hab-flags.json' }
+      - { src: 'misc/json/users.json', dest: '/etc/opt/hab-users.json' }
+      - { src: 'misc/json/usernames.json', dest: '/etc/opt/hab-usernames.json' }
+      - { src: 'misc/json/customers.json', dest: '/etc/opt/hab-customers.json' }
+      - { src: 'misc/json/services.json', dest: '/etc/opt/hab-services.json' }
+
+  # ISSUE
+  - name: /etc/issue
+    lineinfile:
+      dest: '/etc/issue'
+      line: "{{ item.line }}"
+      state: present
+    with_items:
+    - { line: 'IP address: \4{eth0}' }
+    - { line: ' ' }
+    
+    # HTPASSWD crypt() limits length to 8 characters
+  - name: htpasswd admin
+    command: "htpasswd -c -b -d /var/www/www.hackab.se/html/.htpasswd admin password"
+
+  - name: htpasswd users
+    command: "htpasswd -b -d /var/www/www.hackab.se/html/.htpasswd {{ item.value.username }} {{ item.value.password }}"
+    with_dict: "{{ users }}"
+
+  # POSTFIX
+  - name: postfix main.cf local
+    lineinfile:
+      create: yes
+      line: 'default_transport = error'
+      path: "/etc/postfix/main.cf"
+    notify: restart postfix
+
+  - name: postfix main.cf host, listen
+    replace:
+      dest: '/etc/postfix/main.cf'
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    with_items: 
+      - { regexp: '^(myhostname)\ =\ .*$', replace: '\1 = hackab.se' }
+      - { regexp: '^(inet_interfaces)\ =\ .*$', replace: '\1 = 127.0.0.1' }
+    notify: restart postfix
+
+  - name: postfix virtual files
+    file:
+      path: "/var/mail/{{ item.key}}"
+      owner: 'nobody'
+      group: 'nogroup'
+      mode: 'u=rw,g=r,o=r'
+      state: touch
+    with_dict: "{{ users }}"
+    notify: restart postfix
+
+  - name: postfix aliases
+    lineinfile:
+      line: "{{ item.key }}: /var/mail/{{ item.key }}"
+      path: '/etc/aliases'
+    with_dict: "{{ users }}"
+    notify: update aliases
+
+  # VSFTPD
+  # See ./conf/vsftpd.conf and ./habftp
+  - name: vsftpd conf
+    copy:
+      src: 'conf/vsftpd.conf'
+      dest: '/etc/vsftpd.conf'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    notify: restart vsftpd
+
+  - name: vsftpd-pam conf
+    lineinfile:
+      create: yes
+      line: "{{ item.line }}"
+      path: '/etc/pam.d/vsftpd-pwdfile'
+    with_items:
+    - { line: 'auth required pam_pwdfile.so pwdfile /var/www/www.hackab.se/html/.htpasswd' }
+    - { line: 'account required pam_permit.so' }
+
+  - name: ftp users
+    user:
+      name: "{{ item.name }}"
+      shell: "{{ item.shell }}"
+      home: "{{item.home }}"
+      create_home: no
+    with_items:
+    - { name: 'ftp', shell: '/bin/false', home: '/home/ftp'}
+    - { name: 'ftp-anon', shell: '/bin/false', home: '/home/ftp'}
+
+  - name: ftp home
+    file:
+      path: '/home/ftp/pub/'
+      state: directory
+      owner: 'ftp'
+      group: 'ftp'
+      mode: 'u=rx,g=rx,o=rx'
+
+  - name: ftp dirs
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item. dest }}"
+      owner: "{{ item.owner }}"
+      group: "{{ item.group }}"
+      mode: "{{ item.mode }}"
+      directory_mode: "{{ item.directory_mode }}"
+    with_items:
+    - { src: 'habftp/employees/', dest: '/home/ftp/employees', owner: 'ftp', group: 'ftp', mode: 'u=r,g=r,o=r', directory_mode: 'u=rx,g=r,o=r'}
+    - { src: 'habftp/pub/', dest: '/home/ftp/pub', owner: 'ftp-anon', group: 'ftp-anon', mode: 'u=r,g=r,o=r', directory_mode: 'u=rx,g=x,o=x'}
+
+  # SQUID
+  # See ./conf/squid
+  - name: squid conf
+    copy:
+      src: 'conf/squid/squid.conf'
+      dest: '/etc/squid/squid.conf'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    notify: restart squid
+
+  - name: squid error files
+    copy:
+      src: 'conf/squid/hab-errors/'
+      dest: '/usr/share/squid/hab-errors'
+      owner: 'root'
+      group: 'root'
+      mode: 'u=rwX,g=rX,o=rX'
+
+  # DNSMASQ
+  # See ./conf/dnsmasq.conf
+  - name: dnsmasq conf
+    copy:
+      src: 'conf/dnsmasq.conf'
+      dest: '/etc/dnsmasq.conf'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    notify: restart dnsmasq
+
+    # HABINTRANET
+    # See ./habintranet
+  - name: intranet user
+    user:
+      name: intranet
+      comment: intranet
+      shell: /usr/sbin/nologin
+      home: /opt/habintranet
+      create_home: no
+
+  - name: habintranet dir
+    file:
+      path: '/opt/habintranet/'
+      state: directory
+      owner: 'root'
+      group: 'root'
+
+  - name: intranet files
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+      mode: "{{ item.mode }}"
+    with_items:
+    - { src: 'habintranet/habintranet.service', dest: '/etc/systemd/system/habintranet.service', mode: 'u=rw,g=r,o=r' }
+    - { src: 'habintranet/intranet.sh', dest: '/opt/habintranet/intranet', mode: 'u=rwx,g=r,o=rx' }
+    - { src: 'habintranet/intranet.txt', dest: '/opt/habintranet/intranet.txt', mode: 'u=rw,g=r,o=r' }
+    notify: restart habintranet
+
+    # HABLEGACYSVC
+    # See ./hablegacysvc and ./misc/legacyservice.sh
+  - name: hablegacysvc dir
+    file:
+      path: '/opt/hablegacysvc/'
+      state: directory
+      owner: 'root'
+      group: 'root'
+
+  - name: hablegacysvc user
+    user:
+      name: legacysvc
+      comment: legacysvc
+      shell: /usr/sbin/nologin
+      home: /opt/hablegacysvc
+      create_home: no
+
+  - name: hablegacysvc files
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: 'root'
+      group: 'root'
+      mode: "{{ item.mode }}"
+    with_items:
+    - { src: 'hablegacysvc/hablegacysvc.service', dest: '/etc/systemd/system/hablegacysvc.service', mode: 'u=rw,g=r,o=r' }
+    - { src: 'hablegacysvc/HABLegacySvc.conf', dest: '/opt/hablegacysvc/HABLegacySvc.conf', mode: 'u=rw,g=r,o=r' }
+    - { src: '/usr/bin/curl', dest: '/opt/hablegacysvc/HABLegacySvc', mode: 'u=rwx,g=r,o=rx' }
+    notify: restart hablegacysvc
+
+    # BUGBOUNTY
+  - name: bugbounty db dir
+    file:
+      path: '/var/www/bugbounty.hackab.se/db/'
+      state: directory
+      owner: 'www-data'
+      group: 'www-data'
+
+  # ROOT/ADMIN PASSWORD
+  - name: generate root/admin password
+    shell: "openssl passwd -1 -salt HAB-01 {{ admin_password }}"
+    register: password_hash
+
+  - name: set root password
+    user:
+      name: root
+      update_password: always
+      password: "{{ password_hash.stdout }}"
+
+  # ADMIN USER
+  - name: admin user
+    user:
+      name: 'admin'
+      shell: '/bin/bash'
+      groups: 'sudo'
+      update_password: always
+      password: "{{ password_hash.stdout }}"
+      append: yes
+
+  # SSH KEY
+  - name: ssh key
+    lineinfile:
+      create: yes
+      line: "{{ admin_key }}"
+      path: '/home/admin/.ssh/authorized_keys'
+
+  # SSH ACCESS
+  - name: ssh access
+    lineinfile:
+      create: yes
+      line: "{{ item.line }}"
+      path: '/etc/ssh/sshd_config'
+    with_items:
+    - { line: 'AllowUsers admin' }
+    - { line: 'ListenAddress 0.0.0.0' }
+
+  # GRUB
+  - name: grub config
+    replace:
+      dest: '/etc/default/grub'
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    with_items:
+      - { regexp: '^(GRUB_TIMEOUT)=[0-9]$', replace:  '\1=0' }
+      - { regexp: '^(GRUB_CMDLINE_LINUX)=""$', replace:  '\1="net.ifnames=0 biosdevname=0"' }
+    notify: update grub
+
+  # RENAME INTERFACES
+  - name: rename interfaces
+    replace:
+      dest: '/etc/network/interfaces'
+      regexp: 'enp0s3'
+      replace: 'eth0'
+
+  - name: psych
+    lineinfile:
+      create: yes
+      line: "PSYCH!"
+      path: '/root/flag.txt'
+
+  # MAIL FILES
+  # See ./misc/mails
+  - name: mail content
+    copy:
+      src: 'misc/mails/'
+      dest: '/tmp/'
+      owner: root
+      group: root
+      mode: 'u=r,g=r,o=r'
+
+  # FLAGS
+  # see ./misc/json/flags.json
+  - name: static flags
+    replace:
+      dest: "{{ item.value.dest }}"
+      regexp: '{\% FLAG \%}'
+      replace: "{{ item.value.flag }}"
+    with_dict: "{{ flags }}"
+    when: item.value.dest is defined
+    tags:
+      - flags
+
+  # FLUSH HANDLERS
+  - meta: flush_handlers
+
+  # FINALLY, MAILS ...
+  # See ./misc/mails
+  - name: welcome mail
+    shell: "s-nail -Sttycharset=utf-8 -s 'HAB-mailreader' '{{ users | join(' ') }}' < /tmp/welcome.txt"
+    args: 
+      executable: /bin/bash
+    become: yes
+    become_method: su
+    become_user: steve
+
+  - name: password mail
+    shell: "s-nail -Sttycharset=utf-8 -s 'Password policy' '{{ users | join(' ') }}' < /tmp/passwords.txt"
+    args: 
+      executable: /bin/bash
+    become: yes
+    become_method: su
+    become_user: steve
+
+  - name: zip mail to kathleen
+    shell: "s-nail -Sttycharset=utf-8 -s 'Filen du bad om' -a /home/steve/fil.zip kathleen < /tmp/kathleen.txt"
+    args: 
+      executable: /bin/bash
+    become: yes
+    become_method: su
+    become_user: steve
+
+  - name: api mail to miriam, tobias
+    shell: "s-nail -Sttycharset=utf-8 -s 'Beta-APIet' tobias miriam < /tmp/habapi.txt"
+    args: 
+      executable: /bin/bash
+    become: yes
+    become_method: su
+    become_user: steve
+
+  - name: wpa2 mail to thomas
+    shell: "s-nail -Sttycharset=utf-8 -s 'Hack AB Wi-Fi' thomas < /tmp/wpa2.txt"
+    args: 
+      executable: /bin/bash
+    become: yes
+    become_method: su
+    become_user: steve
+
+  - name: steve reminder to self
+    shell: "s-nail -Sttycharset=utf-8 -s 'Note to self' steve < /tmp/reminder.txt"
+    args: 
+      executable: /bin/bash
+    become: yes
+    become_method: su
+    become_user: steve
+
+  - name: legacysvc mail
+    shell: "s-nail -Sttycharset=utf-8 -s 'HABLegacySvc???' '{{ users | join(' ') }}' < /tmp/hablegacysvc.txt"
+    args: 
+      executable: /bin/bash
+    become: yes
+    become_method: su
+    become_user: steve

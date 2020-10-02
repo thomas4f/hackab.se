@@ -1,0 +1,13 @@
+[Unit]
+Description=habintranet
+After=network.target
+
+[Service]
+User=intranet
+Group=intranet
+Type=simple
+ExecStart=/opt/habintranet/intranet
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

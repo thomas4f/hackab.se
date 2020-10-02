@@ -1,0 +1,13 @@
+[Unit]
+Description=HABLegacySvc
+After=network.target
+
+[Service]
+User=legacysvc
+Group=legacysvc
+Type=simple
+ExecStart=/opt/hablegacysvc/HABLegacySvc -K /opt/hablegacysvc/HABLegacySvc.conf
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Private"
+AuthUserFile "/var/www/www.hackab.se/html/.htpasswd"
+Require user steve@hackab.se

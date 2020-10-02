@@ -1,0 +1,47 @@
+           `..--.-.``                
+        ..-:-..`    ````             
+      ..-..`   `..---:---`           
+    `./:`   `.:////::::---.``        
+  `./o+/..-:/+o+/////:::---+o/`      
+  .:+sos++//ooooo++++oys+/:+oy-      
+ .-/shdmNmmdyoossso/oshhhyys+::.`    
+`/+shmNMNmdhysssso/sy+:://oyo+/--.`  
+`:oydNMMmdhhhysoo++++//:-:ssosso//:` 
+ /sdMMMNmddmmdsooo++++/:-/+so+///+/- 
+ `+mMMMNmhhhdhsoosooo++///+oo/:--+/-`
+  `oMMso+ooosssoooooo++/:+oysyddhs::.
+    +Nsso+yysssssssoo++//:/+++/////-.
+     -dhyossyysssssooo+++//++//:::::-
+      `+mmhysossoossooooo+oooo++//+o/
+        `yMhysssssssssssoossssyyyhh/ 
+          +dyssssssssssssooossyyyy-  
+           `-sssssssssssoooossyhy+.  
+             .ssssoosssssooossss+/-  
+              /oo+++++++/+//////::--.
+             ` ` :-` ` :.- ` -` ` ```
+
+========= JOJEBOBAITOTEDOD? =========
+
+Ok, well ... That covers most of the 
+common ones, I think. Let's see:     
+                                     
+  - xor?    check!                   
+  - rot13?  check!                   
+  - rev?    check!                   
+  - hex?    check!                   
+  - base64? check!                   
+  - binary? check!                   
+  - stega?  check!                   
+  - exif?   check!                   
+
+So, that was fun and all but that's  
+quite enough of this kind of stuff,  
+right? Good on you for making it to  
+the end of this little "side quest". 
+                                     
+Sorry, no flag here (but you did     
+spot the plain text password, yes?). 
+                                     
+Now Go capture the flags! :)         
+                                     
+=====================================

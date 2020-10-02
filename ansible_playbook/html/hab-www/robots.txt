@@ -1,0 +1,12 @@
+# robots.txt for http://www.hackab.se
+# {% FLAG %}
+#
+
+User-agent: *
+Disallow: /!admin
+Disallow: /tpl
+Disallow: *.php$
+Disallow: *.phps$
+Allow: /
+
+sitemap: http://www.hackab.se/sitemap.xml

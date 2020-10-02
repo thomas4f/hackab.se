@@ -1,0 +1,17 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "{{ .Box }}"
+  config.ssh.username = "root"
+  config.ssh.password = "toor"
+
+  config.vm.provider "virtualbox" do |v|
+    v.name = "kali-linux-xfce"
+    v.memory = 2048
+    v.cpus = 2
+	v.customize ["modifyvm", :id, "--vram", "32"]
+	v.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+  end
+  
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yml"
+  end
+end

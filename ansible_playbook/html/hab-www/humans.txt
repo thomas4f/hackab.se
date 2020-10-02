@@ -1,0 +1,33 @@
+﻿Hack AB
+-------
+
+Hack AB (HAB) är som du säkert listat ut ett fiktivt företag. Syftet med denna
+"Capture the Flag" (CTF) är att ge it-säkerhetsintresserade personer en
+möjlighet under att mer eller mindre kontrollerade former utforska och försöka
+"angripa" HABs tjänster.
+
+Denna CTF-plattform är i första hand utformad för att låta dig träna på mer
+grundläggande moment såsom informationsinsamling samt verifiering av
+komponentkonfiguration, affärslogik och felhantering. Vissa delar berör
+autentisering, auktorisering och kryptografi.
+
+Det finns inte (i alla fall inte så vitt jag vet) några sårbarheter relaterade
+till indatavalidering såsom XSS, SQLi, LFI, RCE och så vidare. Det finns inte 
+heller några så kallade off-the-shelf programvaror med redan kända sårbarheter.
+Det är alltså ingen idé att använda exempelvis sqlmap eller publika exploits.
+
+Några användbara verktyg för HAB är:
+
+- Firefox/Chrome Developer Tools
+- curl/Wget
+- Nmap
+- Nikto2
+- THC Hydra
+- Burp Suite/OWASP ZAP
+- Wireshark
+- Hashcat/John the Ripper
+
+Plattformen skapades Q1/Q2 2019.
+
+Thomas 2019-05-26
+https://se.linkedin.com/in/thomasedoff

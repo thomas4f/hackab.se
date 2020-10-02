@@ -1,0 +1,200 @@
+{
+	"HELLOWORLD": {
+		"id": "00",
+		"title": "HELLO, WORLD",
+		"categories": ["MISC"],
+		"points": 1,
+		"flag": "HABFLAG{9D1F7EC74FDC0B231967DE2BF731B48A9A9F92BBACDAB76358784C920DD20D4B}",
+		"dest": "/var/www/bugbounty.hackab.se/html/tpl/index.tpl"
+	},
+	"WHOSYOURSOURCE": {
+		"id": "01",
+		"title": "WHO'S YOUR SOURCE",
+		"categories": ["INFO"],
+		"points": 5,
+		"flag": "HABFLAG{502268F8FC9035C06A76B4B7C7E9515CBB54105B11B7CD7760E9711873084053}",
+		"dest": "/var/www/www.hackab.se/html/tpl/header.tpl"
+	},
+	"KILLALLHUMANS": {
+		"id": "02",
+		"title": "KILL ALL HUMANS",
+		"categories": ["INFO"],
+		"points": 5,
+		"flag": "HABFLAG{3045E99ADB3C125E1679B99009320E947C5D6D324F77CF2489E84C39FD2FB57F}",
+		"dest": "/var/www/www.hackab.se/html/robots.txt"
+	},
+	"CHECKYOURHEAD": {
+		"id": "03",
+		"title": "CHECK YOUR HEAD",
+		"categories": ["INFO", "CONFIG"],
+		"points": 10,
+		"flag": "HABFLAG{C89E51C7CD4E5DF41312AA09F7B1926B129138592E6EB1EF5441528B8F6D6B82}",
+		"dest": "/etc/apache2/hab-www.conf"
+	},
+	"GLOBETROTTER": {
+		"id": "04",
+		"title": "GLOBETROTTER",
+		"categories": ["BUSLOGIC"],
+		"points": 15,
+		"flag": "HABFLAG{E741EEAB9795E681E4ED09D73D438D86ECE88593F2037F6F7E6156DE3090E5D8}"
+	},
+	"CWE209": {
+		"id": "05",
+		"title": "CWE-209",
+		"categories": ["INFO", "ERR"],
+		"points": 15,
+		"flag": "HABFLAG{87732D497802937F8F34FA4343E5D1385746F13EE4EBFE6EEA0ADCD8926F1DC1}"
+	},
+	"NOWTELLMEYOURREALSOURCE": {
+		"id": "06",
+		"title": "NOW TELL ME YOUR REAL SOURCE",
+		"categories": ["INFO", "BUSLOGIC"],
+		"points": 25,
+		"flag": "HABFLAG{8307133741A8CE394F68D27CD8DB2336C55E3B29BFF08F0743FA1EF57313B3A2}",
+		"dest": "/var/www/www.hackab.se/html/index.php"
+	},
+	"IDOR": {
+		"id": "07",
+		"title": "IDOR",
+		"categories": ["ERR", "AUTHZ"],
+		"points": 15,
+		"flag": "HABFLAG{F301272C9B8B614878D3FE2B4CFBCF4556B8A2926A464BC199EE95294F6AEC7C}",
+		"dest": "/var/www/www.hackab.se/html/tpl/flag-backup.tpl"
+	},
+	"REDACTED": {
+		"id": "08",
+		"title": "REDACTED",
+		"categories": ["CONFIG", "AUTHZ", "MISC"],
+		"points": 30,
+		"flag": "HABFLAG{C6E1DEB163B484C44EE18BCBDB65E6FD15AB4C0642536223D95800ECE0E3ED5C}"
+	},
+	"ITWORKS": {
+		"id": "09",
+		"title": "IT WORKS!",
+		"categories": ["INFO", "CONFIG"],
+		"points": 50,
+		"flag": "HABFLAG{B26DB6368C0AB87425DDB0B8AAF3871576670D9B41C3F2A74CF7C605E3BF2D1C}",
+		"dest": "/var/www/html/index.html"
+	},
+	"OUTOFSITEOUTOFMIND": {
+		"id": "10",
+		"title": "OUT OF SITE, OUT OF MIND",
+		"categories": ["INFO", "CONFIG"],
+		"points": 50,
+		"flag": "HABFLAG{4C5FCF84FB904E7627E64B20103D1BB2B1CC6D2A8883ACD72922C0E8DEF34EAD}",
+		"dest": "/var/www/www.hackab.se/html/backup/index.html"
+	},
+	"CLOSEBUTNOCIGAR": {
+		"id": "11",
+		"title": "CLOSE BUT NO CIGAR",
+		"categories": ["IDENT", "AUTHN"],
+		"points": 30,
+		"flag": "HABFLAG{2B13E2017348E8837716ABAF4593DE5E7D2170CE0F1E3965FD7427EBFCF79EA3}"
+	},
+	"WELCOMESUPERMANILOVEYOU": {
+		"id": "12",
+		"title": "WELCOME, SUPERMAN. I LOVE YOU!",
+		"categories": ["IDENT", "AUTHN", "SESS"],
+		"points": 50,
+		"flag": "HABFLAG{35FFE6AE36D100A3D18729B8ECA95746DC41C3222E542BDF562059BD87F8E67A}",
+		"dest": "/tmp/welcome.txt"
+	},
+	"ROBAC": {
+		"id": "13",
+		"title": "ROBAC",
+		"categories": ["AUTHZ"],
+		"points": 50,
+		"flag": "HABFLAG{AE5EEF990EC26515DD6E363DF8EBD622994F071CF6ECE76EC4B4271B5CBD641E}"
+	},
+	"YOUVEGOTMAIL": {
+		"id": "14",
+		"title": "YOU'VE GOT MAIL",
+		"categories": ["AUTHZ", "BUSLOGIC"],
+		"points": 75,
+		"flag": "HABFLAG{DFD82EBD1BB228A286F022ED9C6057109715863C6AD530C320B8D8D155DFFD12}"
+	},
+	"COMPUTERGENERATEDIMAGERY": {
+		"id": "15",
+		"title": "COMPUTER-GENERATED IMAGERY?",
+		"categories": ["INFO", "CONFIG"],
+		"points": 50,
+		"flag": "HABFLAG{DC0A72014B7D1ADD0413ACCF8EE4E2EE3860C5EF6038663C001A13C2AC7CD808}",
+		"dest": "/usr/local/bin/nginx/sf"
+	},
+	"HOMESWEETHOME": {
+		"id": "16",
+		"title": "HOME SWEET HOME",
+		"categories": ["CONFIG", "BUSLOGIC"],
+		"points": 125,
+		"flag": "HABFLAG{DD85C4D12FF685BA6FA8D0DA87CAFD3BA3497202C0D2E2EF5DE26B331E459433}",
+		"dest": "/home/steve/public_html/todo.txt"
+	},
+	"GOTGPU": {
+		"id": "17",
+		"title": "GOT GPU?",
+		"categories": ["CRYPST"],
+		"points": 150,
+		"flag": "HABFLAG{56A191623CBBFD2C913FCAA9A44CF2CE8A232B424392B786657B0CB147BE6C67}",
+		"dest": "/home/steve/public_html/private/flag.txt"
+	},
+	"READYGETSETTXT": {
+		"id": "18",
+		"title": "READY, GET SET, TXT",
+		"categories": ["INFO"],
+		"points": 50,
+		"flag": "HABFLAG{C015F8FF6F118E59B1DE5481BAF4A987E3471F842079340350513520D1E1AE6F}"
+	},
+	"DEPEDNSONWHOYOUASK": {
+		"id": "19",
+		"title": "DEPEDNS ON WHO YOU ASK",
+		"categories": ["INFO", "CONFIG", "AUTHN"],
+		"points": 75,
+		"flag": "HABFLAG{DB19C2EBDF5EB44E602F3ABBFFAF87BC64F3021E95F532F13C6DAA5E9319D33A}",
+		"dest": "/etc/dnsmasq.conf"
+	},
+	"ONTHESUBJECTOFVHOSTNAMES": {
+		"id": "20",
+		"title": "ON THE SUBJECT OF VHOSTNAMES",
+		"categories": ["INFO"],
+		"points": 75,
+		"flag": "HABFLAG{39F301F7392BBB0FDC73668A0BA3D430E5321200087CC838ACFFAD66D18F4EF7}",
+		"dest": "/var/www/internal-staging.hackab.se/html/index.html"
+	},
+	"THERESNOJWTOWAYSABOUTIT": {
+		"id": "21",
+		"title": "THERE'S NO JWTO WAYS ABOUT IT",
+		"categories": ["AUTHN", "AUTHZ"],
+		"points": 150,
+		"flag": "HABFLAG{23D8B4DDDA2A2CF95F1D9F17A362E688440093C63593262AFA9509C4429398D6}",
+		"dest": "/srv/fastcgi/habapi/habapi.py"
+	},
+	"EXTRAINTRANET": {
+		"id": "22",
+		"title": "EXTRA-INTRANET",
+		"categories": ["CONFIG", "BUSLOGIC"],
+		"points": 100,
+		"flag": "HABFLAG{48B3E6C312B00C55BDD364857615F3E6D6FBF9378DBF1C535D5713D1338E985E}",
+		"dest": "/opt/habintranet/intranet.txt"
+	},
+	"MON0ITOREDATWORK": {
+		"id": "23",
+		"title": "MON0ITORED AT WORK?",
+		"categories": ["CRYPST"],
+		"points": 150,
+		"flag": "HABFLAG{305DCE3BB46FB34D3FC1944FD84796D7FA639DA34380BBFD01607870AA9FEDCA}"
+	},
+	"MISHAP": {
+		"id": "24",
+		"title": "MISHAP",
+		"categories": ["CRYPST"],
+		"points": 150,
+		"flag": "HABFLAG{71C3D0F168FBFBE24212011942DA29E6528CC8BB537D4F084D47FD798AB8B017}"
+	},
+	"GITGUD": {
+		"id": "25",
+		"title": "GIT GUD",
+		"categories": ["INFO", "BUSLOGIC"],
+		"points": 100,
+		"flag": "HABFLAG{7576EE46966405C5FD86826D30AD5EE266A0451AF357B627541F6E498675AEEF}"
+	}
+}

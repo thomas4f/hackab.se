@@ -1,0 +1,26 @@
+{
+	"ok": {
+		"title": "OK",
+		"description": "Pellentesque rhoncus, lectus ut volutpat pharetra, mi eros auctor turpis, feugiat condimentum dui orci vitae ante. Sed facilisis gravida magna, et pretium diam lobortis eu. Quisque fermentum, dui eu condimentum congue.",
+		"link": false,
+		"available": false
+	},
+	"bra": {
+		"title": "Bra",
+		"description": "Vivamus lacinia malesuada ex sit amet fermentum. Ut faucibus erat ac porttitor vestibulum. Nullam porttitor vehicula nisi, vel euismod nisi lacinia non. Sed pharetra purus at lectus molestie, in fermentum massa malesuada.",
+		"link": "http://www.hackab.se/files?id=5",
+		"available": true
+	},
+	"battre": {
+		"title": "Bättre",
+		"description": "Curabitur volutpat malesuada feugiat. Quisque vel justo quis urna tempus dignissim ac quis neque. Donec tempus magna et turpis egestas accumsan. Praesent rutrum condimentum mauris, nec vestibulum mauris.",
+		"link": "http://www.hackab.se/files?id=3",
+		"available": true
+	},
+	"bast": {
+		"title": "Bäst",
+		"description": "Aenean dapibus cursus ligula, in sollicitudin ex luctus vel. Suspendisse scelerisque libero eget nulla sollicitudin, euismod euismod ex tempor. Sed non sem pharetra, placerat enim nec, finibus velit.",
+		"link": "http://www.hackab.se/files?id=1",
+		"available": true
+	}
+}

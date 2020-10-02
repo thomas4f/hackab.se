@@ -1,0 +1,10 @@
+TODO
+
+ - A proper backup solution!
+ - Remove Erik's template and reference in index.php
+ - Disable the x-httpd-php-source (.phps) handler in Apache
+ - Profit?
+
+DONE
+ - Generate this flag: {% FLAG %}
+ - Disable directory indexing for /images, /inc and /tpl

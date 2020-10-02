@@ -1,0 +1,4 @@
+packer_input/*
+packer_cache/*
+packer_output/*
+ansible_playbook/misc/keys/letsencrypt
